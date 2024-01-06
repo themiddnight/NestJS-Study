@@ -1,0 +1,7 @@
+{
+  "categories": [
+    { "id": 1, "name": "Electronic" },
+    { "id": 2, "name": "Food" },
+    { "id": 3, "name": "Luxuary" }
+  ]
+}
