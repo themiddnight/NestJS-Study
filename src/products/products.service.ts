@@ -1,100 +1,78 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
-import { ProductDto, RawProductDto, CategoryDto } from './dto/product.dto';
-import { products, categories } from '../../data/data';
+import { Injectable } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
-// Helper function
-function joinProductCategory(
-  product: RawProductDto,
-  categories: CategoryDto[],
-): ProductDto {
-  const itemCategory = categories.find(
-    (category) => category.id === product.cat_id,
-  ).name;
-  const joinedProduct: ProductDto = { ...product, category: itemCategory };
-  return joinedProduct;
-}
+import { InjectModel } from '@nestjs/sequelize';
+import { Product } from './models/product.model';
+import { Category } from 'src/category/models/category.model';
 
-// Service
 @Injectable()
 export class ProductsService {
-  findAllProducts(): ProductDto[] {
-    const result = products.map((product) =>
-      joinProductCategory(product, categories),
-    );
-    console.log('get all products');
-    return result;
+  constructor(
+    @InjectModel(Product)
+    private productModel: typeof Product,
+  ) {}
+
+  async findAll(): Promise<CreateProductDto[]> {
+    return this.productModel.findAll({
+      include: [Category],
+    });
   }
 
-  findProductsByName(name: string): ProductDto[] {
-    const result = products
-      .filter((product) => product.name.includes(name))
-      .map((product) => joinProductCategory(product, categories));
-    if (result.length === 0) {
-      throw new NotFoundException(`Product with name ${name} not found`);
-    }
-
-    return result;
+  async findOne(id: number): Promise<CreateProductDto> {
+    return this.productModel.findOne({
+      include: [Category],
+      where: {
+        id: id,
+      },
+    });
   }
 
-  findProductById(id: number): ProductDto {
-    const product = products.find((product) => product.id === id);
-    if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
-    }
-    const result = joinProductCategory(product, categories);
-
-    return result;
+  async findName(name: string): Promise<CreateProductDto[]> {
+    return this.productModel.findAll({
+      include: [Category],
+      where: {
+        name: name,
+      },
+    });
   }
 
-  createProduct(product: RawProductDto): ProductDto {
-    if (!product.name || !product.price || !product.cat_id) {
-      throw new BadRequestException('Missing name, price or cat_id');
-    }
-
-    const newProduct = {
-      ...product,
-      price: Number(product.price),
-      id: products.length + 1,
-      cat_id: Number(product.cat_id),
-    };
-    products.push(newProduct);
-
-    return joinProductCategory(newProduct, categories);
+  async create(createProductDto: CreateProductDto): Promise<CreateProductDto> {
+    const product = new Product();
+    product.name = createProductDto.name;
+    product.price = createProductDto.price;
+    product.cat_id = createProductDto.cat_id;
+    return product.save();
   }
 
-  updateProduct(id: number, product: RawProductDto): ProductDto {
-    if (!product.name || !product.price || !product.cat_id) {
-      throw new BadRequestException('Missing name, price or cat_id');
-    }
-    const index = products.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Product with id ${id} not found`);
-    }
-
-    const updatedProduct = {
-      ...product,
-      price: Number(product.price),
-      id: Number(id),
-      cat_id: Number(product.cat_id),
-    };
-    products[index] = updatedProduct;
-
-    return joinProductCategory(updatedProduct, categories);
+  async bulkCreate(
+    createProductDto: CreateProductDto[],
+  ): Promise<CreateProductDto[]> {
+    return this.productModel.bulkCreate(createProductDto);
   }
 
-  deleteProcuct(id: number): ProductDto {
-    const index = products.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Product with id ${id} not found`);
-    }
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<CreateProductDto> {
+    const product = await this.productModel.findOne({
+      where: {
+        id: id,
+      },
+    });
+    product.name = updateProductDto.name;
+    product.price = updateProductDto.price;
+    product.cat_id = updateProductDto.cat_id;
+    return product.save();
+  }
 
-    const deletedProduct = products[index];
-    products.splice(index, 1);
-
-    return joinProductCategory(deletedProduct, categories);
+  async remove(id: number): Promise<CreateProductDto> {
+    const product = await this.productModel.findOne({
+      where: {
+        id: id,
+      },
+    });
+    product.destroy();
+    return product;
   }
 }
