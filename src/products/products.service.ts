@@ -1,78 +1,135 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Sequelize } from 'sequelize-typescript';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
-import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './models/product.model';
-import { Category } from 'src/category/models/category.model';
+import { Category } from '../category/models/category.model';
 
+// Helper function
+async function isValidCategory(category_id: number): Promise<boolean> {
+  const category_ids = await Category.findAll({
+    attributes: ['id'],
+  });
+  return category_ids.some((id) => id.id === category_id);
+}
+
+// CRUD operations
 @Injectable()
 export class ProductsService {
-  constructor(
-    @InjectModel(Product)
-    private productModel: typeof Product,
-  ) {}
-
   async findAll(): Promise<CreateProductDto[]> {
-    return this.productModel.findAll({
-      include: [Category],
+    return Product.findAll({
+      attributes: [
+        'id',
+        'name',
+        'price',
+        'cat_id',
+        [Sequelize.col('Category.name'), 'cat_name'],
+        'createdAt',
+        'updatedAt',
+      ],
+      include: { model: Category, attributes: [] },
     });
   }
 
   async findOne(id: number): Promise<CreateProductDto> {
-    return this.productModel.findOne({
-      include: [Category],
-      where: {
-        id: id,
-      },
+    const result = await Product.findOne({
+      attributes: [
+        'id',
+        'name',
+        'price',
+        'cat_id',
+        [Sequelize.col('Category.name'), 'cat_name'],
+        'createdAt',
+        'updatedAt',
+      ],
+      where: { id: id },
+      include: { model: Category, attributes: [] },
     });
+    if (!result) {
+      throw new NotFoundException('Could not find product.');
+    }
+
+    return result;
   }
 
   async findName(name: string): Promise<CreateProductDto[]> {
-    return this.productModel.findAll({
-      include: [Category],
-      where: {
-        name: name,
-      },
+    const result = await Product.findAll({
+      attributes: [
+        'id',
+        'name',
+        'price',
+        'cat_id',
+        [Sequelize.col('Category.name'), 'cat_name'],
+        'createdAt',
+        'updatedAt',
+      ],
+      where: { name: name },
+      include: { model: Category, attributes: [] },
     });
+    if (!result) {
+      throw new NotFoundException('Could not find product.');
+    }
+
+    return result;
   }
 
   async create(createProductDto: CreateProductDto): Promise<CreateProductDto> {
-    const product = new Product();
-    product.name = createProductDto.name;
-    product.price = createProductDto.price;
-    product.cat_id = createProductDto.cat_id;
-    return product.save();
+    if (!(await isValidCategory(createProductDto.cat_id))) {
+      throw new BadRequestException('Category does not exist.');
+    }
+
+    return Product.create(createProductDto);
   }
 
   async bulkCreate(
     createProductDto: CreateProductDto[],
   ): Promise<CreateProductDto[]> {
-    return this.productModel.bulkCreate(createProductDto);
+    const category_ids = await Category.findAll({
+      attributes: ['id'],
+    });
+
+    createProductDto.forEach((product) => {
+      if (!category_ids.some((id) => id.id === product.cat_id)) {
+        throw new BadRequestException('Category does not exist.');
+      }
+    });
+
+    return Product.bulkCreate(createProductDto);
   }
 
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<CreateProductDto> {
-    const product = await this.productModel.findOne({
+    if (!(await isValidCategory(updateProductDto.cat_id))) {
+      throw new BadRequestException('Category does not exist.');
+    }
+
+    const product = await Product.findOne({
       where: {
         id: id,
       },
     });
-    product.name = updateProductDto.name;
-    product.price = updateProductDto.price;
-    product.cat_id = updateProductDto.cat_id;
+    product.name = updateProductDto.name || product.name;
+    product.price = updateProductDto.price || product.price;
+    product.cat_id = updateProductDto.cat_id || product.cat_id;
+
     return product.save();
   }
 
   async remove(id: number): Promise<CreateProductDto> {
-    const product = await this.productModel.findOne({
+    const product = await Product.findOne({
       where: {
         id: id,
       },
     });
     product.destroy();
+
     return product;
   }
 }

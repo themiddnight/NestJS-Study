@@ -15,7 +15,7 @@ import { Category } from './category/models/category.model';
   imports: [
     SequelizeModule.forRoot({
       dialect: 'sqlite',
-      storage: './db.sqlite',
+      storage: 'data/db.sqlite',
       autoLoadModels: true,
       synchronize: true,
       models: [Product, Category],
