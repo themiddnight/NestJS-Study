@@ -17,9 +17,16 @@ export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
   @Get()
-  findAll(@Query('name') name?: string) {
+  findAll(
+    @Query('name') name?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
     if (name) {
       return this.productsService.findName(name);
+    }
+    if (page || limit) {
+      return this.productsService.findPage(+page || 1, +limit || 10);
     }
     return this.productsService.findAll();
   }

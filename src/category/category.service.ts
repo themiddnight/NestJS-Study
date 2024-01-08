@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { Op } from 'sequelize';
+
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-
 import { Category } from './models/category.model';
 import { Product } from '../products/models/product.model';
 
@@ -9,6 +10,12 @@ import { Product } from '../products/models/product.model';
 export class CategoryService {
   async findAll() {
     return Category.findAll();
+  }
+
+  async findName(name: string) {
+    return Category.findAll({
+      where: { name: { [Op.like]: `%${name}%` } },
+    });
   }
 
   async findOne(id: number) {

@@ -3,14 +3,18 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
+
+import { Op } from 'sequelize';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
 import { Product } from './models/product.model';
 import { Category } from '../category/models/category.model';
 
 // Helper function
+/**
+ * Checks if a category exists.
+ */
 async function isValidCategory(category_id: number): Promise<boolean> {
   const category_ids = await Category.findAll({
     attributes: ['id'],
@@ -28,7 +32,7 @@ export class ProductsService {
         'name',
         'price',
         'cat_id',
-        [Sequelize.col('Category.name'), 'cat_name'],
+        [Product.sequelize.col('Category.name'), 'cat_name'],
         'createdAt',
         'updatedAt',
       ],
@@ -43,7 +47,7 @@ export class ProductsService {
         'name',
         'price',
         'cat_id',
-        [Sequelize.col('Category.name'), 'cat_name'],
+        [Product.sequelize.col('Category.name'), 'cat_name'],
         'createdAt',
         'updatedAt',
       ],
@@ -64,11 +68,33 @@ export class ProductsService {
         'name',
         'price',
         'cat_id',
-        [Sequelize.col('Category.name'), 'cat_name'],
+        [Product.sequelize.col('Category.name'), 'cat_name'],
         'createdAt',
         'updatedAt',
       ],
-      where: { name: name },
+      where: { name: { [Op.like]: `%${name}%` } },
+      include: { model: Category, attributes: [] },
+    });
+    if (!result) {
+      throw new NotFoundException('Could not find product.');
+    }
+
+    return result;
+  }
+
+  async findPage(page: number, limit: number): Promise<CreateProductDto[]> {
+    const result = await Product.findAll({
+      attributes: [
+        'id',
+        'name',
+        'price',
+        'cat_id',
+        [Product.sequelize.col('Category.name'), 'cat_name'],
+        'createdAt',
+        'updatedAt',
+      ],
+      offset: (page - 1) * limit,
+      limit: limit,
       include: { model: Category, attributes: [] },
     });
     if (!result) {
@@ -95,7 +121,9 @@ export class ProductsService {
 
     createProductDto.forEach((product) => {
       if (!category_ids.some((id) => id.id === product.cat_id)) {
-        throw new BadRequestException('Category does not exist.');
+        throw new BadRequestException(
+          `Product ${product.name} has invalid category id ${product.cat_id}.`,
+        );
       }
     });
 
