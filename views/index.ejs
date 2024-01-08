@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API</title>
+  <style>
+    body {
+      padding: 40px;
+      margin: 0;
+    }
+
+    h3 {
+      margin: 30px 0 0px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+      padding: 5px 10px;
+    }
+
+    pre {
+      background-color: #eee;
+      padding: 20px;
+      margin-inline: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .item {
+      flex: 1 1 500px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>API</h1>
+
+  <div class='container'>
+    <div class='item'>
+      <h2>Category routes:</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Route</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GET</td>
+            <td>/categories</td>
+            <td>Get all categories</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/categories?name=[name]</td>
+            <td>Get categories by name.</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/categories/[id]</td>
+            <td>Get category by id</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/categories/[id]/products</td>
+            <td>Get category and its products by id</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/categories</td>
+            <td>Create new category. Can be single or array of object.</td>
+          </tr>
+          <tr>
+            <td>PATCH</td>
+            <td>/categories/[id]</td>
+            <td>Update category by id</td>
+          </tr>
+          <tr>
+            <td>DELETE</td>
+            <td>/categories/[id]</td>
+            <td>Delete category by id</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response data structure:</h3>
+      <pre>
+{
+  "id":         number,
+  "name":       string,
+  "createdAt":  timestamp,
+  "updatedAt":  timestamp,
+
+  <i>"products": [     << Only for /categories/[id]/products
+    {
+      "id":         number,
+      "name":       string,
+      "price":      number,
+      "cat_id":     number,
+      "createdAt":  timestamp,
+      "updatedAt":  timestamp,
+    },
+    ...</i>
+  ]
+}     </pre>
+
+      <h3>Create data structure:</h3>
+      <pre>
+{
+  "name": string,
+}     </pre>
+
+      <h3>Category list:</h3>
+      <ul>
+        <li>1: Electronic</li>
+        <li>2: Food</li>
+        <li>3: Luxuary</li>
+        <li>4: Instrument</li>
+      </ul>
+    </div>
+
+    <div class='item'>
+      <h2>Product routes:</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Route</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GET</td>
+            <td>/products</td>
+            <td>Get all products</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/products?name=[name]</td>
+            <td>Get products by name. If apply, will ignore page and limit</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/products?page=[page]&limit=[limit]</td>
+            <td>Get products by page and/or limit. Default is 1 and 10</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <td>/products/[id]</td>
+            <td>Get product by id</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <td>/products</td>
+            <td>Create new product. Can be single or array of object.</td>
+          </tr>
+          <tr>
+            <td>PATCH</td>
+            <td>/products/[id]</td>
+            <td>Update product by id</td>
+          </tr>
+          <tr>
+            <td>DELETE</td>
+            <td>/products/[id]</td>
+            <td>Delete product by id</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response data structure:</h3>
+      <pre>
+{
+  "id":         number,
+  "name":       string,
+  "price":      number,
+  "cat_id":     number,
+  "cat_name":   string
+  "createdAt":  timestamp,
+  "updatedAt":  timestamp,
+}     </pre>
+
+      <h3>Create data structure:</h3>
+      <pre>
+{
+  "name":   string,
+  "price":  number,
+  "cat_id": number
+}     </pre>
+    </div>
+  </div>
+
+</body>
+
+</html>
