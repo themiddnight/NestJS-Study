@@ -18,6 +18,7 @@ import { Category } from './category/models/category.model';
       storage: 'data/db.sqlite',
       autoLoadModels: true,
       synchronize: true,
+      // sync: { force: true },
       models: [Product, Category],
     }),
     ProductsModule,

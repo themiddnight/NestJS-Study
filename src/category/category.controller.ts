@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   Query,
+  ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { NoFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('categories')
 export class CategoryController {
@@ -25,16 +28,17 @@ export class CategoryController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.categoryService.findOne(+id);
   }
 
   @Get(':id/products')
-  findProducts(@Param('id') id: string) {
+  findProducts(@Param('id', ParseIntPipe) id: string) {
     return this.categoryService.findProducts(+id);
   }
 
   @Post()
+  @UseInterceptors(NoFilesInterceptor())
   create(@Body() createCategoryDto: CreateCategoryDto | CreateCategoryDto[]) {
     if (Array.isArray(createCategoryDto)) {
       return this.categoryService.bulkCreate(createCategoryDto);
@@ -43,15 +47,16 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @UseInterceptors(NoFilesInterceptor())
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.categoryService.remove(+id);
   }
 }

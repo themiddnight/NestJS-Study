@@ -32,6 +32,8 @@
     }
 
     .container {
+      max-width: 1920px;
+      margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       gap: 40px;
@@ -44,7 +46,9 @@
 </head>
 
 <body>
-  <h1>API</h1>
+  <div class="container">
+    <h1>API</h1>
+  </div>
 
   <div class='container'>
     <div class='item'>
@@ -188,7 +192,7 @@
   "name":       string,
   "price":      number,
   "cat_id":     number,
-  "cat_name":   string
+  "category":   string
   "createdAt":  timestamp,
   "updatedAt":  timestamp,
 }     </pre>

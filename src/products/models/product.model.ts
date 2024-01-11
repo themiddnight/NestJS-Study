@@ -36,6 +36,9 @@ export class Product extends Model<Product> {
   })
   cat_id: number;
 
-  @BelongsTo(() => Category)
+  @BelongsTo(() => Category, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   category: Category;
 }
