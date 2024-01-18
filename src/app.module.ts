@@ -2,12 +2,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ConfigModule } from '@nestjs/config';
 
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './category/category.module';
 
 import { Product } from './products/models/product.model';
 import { Category } from './category/models/category.model';
+
+import configuration from './config/configuration';
 
 @Module({
   controllers: [AppController],
@@ -20,6 +23,10 @@ import { Category } from './category/models/category.model';
       synchronize: true,
       // sync: { force: true },
       models: [Product, Category],
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
     }),
     ProductsModule,
     CategoryModule,
