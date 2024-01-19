@@ -24,7 +24,6 @@ export class ProductsService {
 
   constructor(private configService: ConfigService) {
     this.base_url = this.configService.get('base_url');
-    this.port = this.configService.get('port');
     this.api_path = this.configService.get('api_path');
   }
 
@@ -43,6 +42,7 @@ export class ProductsService {
     const previousPage = pageParam - 1 < 1 ? 1 : pageParam - 1;
     const nextPage = pageParam + 1 > totalPages ? totalPages : pageParam + 1;
     const result = await Product.findAll({
+      attributes: ['id', 'name', 'price', 'cat_id'],
       where: { name: { [Op.like]: `%${nameParam}%` } },
       offset: (pageParam - 1) * limitParam,
       limit: limitParam,
@@ -58,8 +58,8 @@ export class ProductsService {
       message: 'Success',
       current_page: pageParam,
       total_pages: Math.ceil(productCount / limitParam),
-      previous: `${this.base_url}:${this.port}/${this.api_path}/products?name=${nameParam}&page=${previousPage}&limit=${limitParam}`,
-      next: `${this.base_url}:${this.port}/${this.api_path}/products?name=${nameParam}&page=${nextPage}&limit=${limitParam}`,
+      previous: `${this.base_url}/${this.api_path}/products?name=${nameParam}&page=${previousPage}&limit=${limitParam}`,
+      next: `${this.base_url}/${this.api_path}/products?name=${nameParam}&page=${nextPage}&limit=${limitParam}`,
       data: result,
     };
   }
