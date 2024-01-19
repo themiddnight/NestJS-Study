@@ -17,7 +17,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import {
+  CreateCategoryDto,
+  ResponseCategoriesDto,
+  ResponseCategoryDto,
+} from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
@@ -27,14 +31,22 @@ export class CategoryController {
 
   @Get()
   @ApiOperation({ summary: 'List of categories' })
-  @ApiResponse({ status: 200, description: 'List of categories' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of categories',
+    type: ResponseCategoriesDto,
+  })
   findAll() {
     return this.categoryService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Detail of category' })
-  @ApiResponse({ status: 200, description: 'Detail of category' })
+  @ApiResponse({
+    status: 200,
+    description: 'Detail of category',
+    type: ResponseCategoryDto,
+  })
   @ApiResponse({ status: 404, description: 'Category not found' })
   @ApiParam({ name: 'id', required: true })
   findOne(@Param('id', ParseIntPipe) id: string) {

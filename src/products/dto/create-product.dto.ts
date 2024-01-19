@@ -1,24 +1,6 @@
 import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-// import { Category } from '../../category/models/category.model';
 import { Product } from '../models/product.model';
-
-// class Product {
-//   @ApiProperty()
-//   id: number;
-
-//   @ApiProperty()
-//   name: string;
-
-//   @ApiProperty()
-//   price: number;
-
-//   @ApiProperty()
-//   cat_id: number;
-
-//   @ApiProperty()
-//   category: Category;
-// }
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -64,7 +46,7 @@ export class ResponseProductDto {
   @ApiProperty()
   message: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: Product })
   data: Product;
 }
 

@@ -3,7 +3,6 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Op } from 'sequelize';
 
 import {
@@ -18,15 +17,6 @@ import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class ProductsService {
-  base_url: any;
-  port: any;
-  api_path: any;
-
-  constructor(private configService: ConfigService) {
-    this.base_url = this.configService.get('base_url');
-    this.api_path = this.configService.get('api_path');
-  }
-
   async findAll(
     name: string,
     page: number,

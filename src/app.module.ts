@@ -10,8 +10,6 @@ import { CategoryModule } from './category/category.module';
 import { Product } from './products/models/product.model';
 import { Category } from './category/models/category.model';
 
-import configuration from './config/configuration';
-
 @Module({
   controllers: [AppController],
   providers: [AppService],
@@ -26,7 +24,6 @@ import configuration from './config/configuration';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
     }),
     ProductsModule,
     CategoryModule,
