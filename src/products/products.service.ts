@@ -16,56 +16,29 @@ import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class ProductsService {
-  private defaultPage = 1;
-  private defaultLimit = 10;
-
   async findAll(
     name: string,
-    page: number,
-    limit: number,
-  ): Promise<ResponseProductsDto> {
-    const nameParam = name || '';
-    const pageParam = page || this.defaultPage;
-    const limitParam = limit || this.defaultLimit;
-    const productCount = await Product.count({
-      where: { name: { [Op.like]: `%${nameParam}%` } },
-    });
-    const result = await Product.findAll({
-      attributes: [['product_id', 'id'], 'name', 'price'],
-      where: { name: { [Op.like]: `%${nameParam}%` } },
-      offset: (pageParam - 1) * limitParam,
-      limit: limitParam,
-      include: { model: Category, attributes: [['category_id', 'id'], 'name'] },
-    });
-    if (result.length === 0) {
-      throw new NotFoundException({
-        message: 'Could not find products.',
-        data: [],
-      });
-    }
-    return {
-      message: 'Success',
-      current_page: pageParam,
-      total_pages: Math.ceil(productCount / limitParam),
-      data: result,
-    };
-  }
-
-  async findByCategory(
     category_id: number,
     page: number,
     limit: number,
   ): Promise<ResponseProductsDto> {
-    const pageParam = page || this.defaultPage;
-    const limitParam = limit || this.defaultLimit;
+    const whereCondition: any = {};
+    if (name) {
+      whereCondition.name = { [Op.like]: `%${name}%` };
+    }
+    if (category_id) {
+      whereCondition.category_id = category_id;
+    }
+    page = page || 1;
+    limit = limit || 10;
     const productCount = await Product.count({
-      where: { category_id: category_id },
+      where: whereCondition,
     });
     const result = await Product.findAll({
       attributes: [['product_id', 'id'], 'name', 'price'],
-      where: { category_id: category_id },
-      offset: (pageParam - 1) * limitParam,
-      limit: limitParam,
+      where: whereCondition,
+      offset: (page - 1) * limit,
+      limit: limit,
       include: { model: Category, attributes: [['category_id', 'id'], 'name'] },
     });
     if (result.length === 0) {
@@ -76,8 +49,8 @@ export class ProductsService {
     }
     return {
       message: 'Success',
-      current_page: pageParam,
-      total_pages: Math.ceil(productCount / limitParam),
+      current_page: page,
+      total_pages: Math.ceil(productCount / limit),
       data: result,
     };
   }
