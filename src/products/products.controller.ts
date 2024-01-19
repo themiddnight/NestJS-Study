@@ -18,13 +18,14 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { ProductsService } from './products.service';
-import {
-  CreateProductDto,
-  ResponseProductsDto,
-  ResponseProductDto,
-} from './dto/create-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  ResponseProductDto,
+  ResponseProductsDto,
+} from './dto/response-product.dto';
 
 @Controller('products')
 @ApiTags('Products')
@@ -46,6 +47,7 @@ export class ProductsController {
   @ApiQuery({ name: 'limit', required: false })
   findAll(
     @Query('name') name?: string,
+    @Query('cat_id') cat_id?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {

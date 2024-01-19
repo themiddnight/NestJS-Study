@@ -16,13 +16,14 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
-  CreateCategoryDto,
   ResponseCategoriesDto,
   ResponseCategoryDto,
-} from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+} from './dto/response-category.dto';
 
 @Controller('categories')
 @ApiTags('Categories')

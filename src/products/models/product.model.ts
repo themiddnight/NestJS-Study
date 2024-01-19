@@ -17,7 +17,7 @@ export class Product extends Model<Product> {
     autoIncrement: true,
     primaryKey: true,
   })
-  id: number;
+  product_id: number;
 
   @ApiProperty()
   @Column({
@@ -39,7 +39,7 @@ export class Product extends Model<Product> {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  cat_id: number;
+  category_id: number;
 
   @ApiProperty()
   @BelongsTo(() => Category, {

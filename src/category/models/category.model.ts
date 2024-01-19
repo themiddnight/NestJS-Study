@@ -10,7 +10,7 @@ export class Category extends Model<Category> {
     autoIncrement: true,
     primaryKey: true,
   })
-  id: number;
+  category_id: number;
 
   @ApiProperty()
   @Column({

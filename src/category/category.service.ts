@@ -4,19 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
-  CreateCategoryDto,
   ResponseCategoriesDto,
   ResponseCategoryDto,
-} from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+} from './dto/response-category.dto';
 import { Category } from './models/category.model';
 
 @Injectable()
 export class CategoryService {
   async findAll(): Promise<ResponseCategoriesDto> {
     const result = await Category.findAll({
-      attributes: ['id', 'name'],
+      attributes: [['category_id', 'id'], 'name'],
     });
     if (result.length === 0) {
       throw new NotFoundException({
@@ -32,8 +32,9 @@ export class CategoryService {
 
   async findOne(id: number): Promise<ResponseCategoryDto> {
     const result = await Category.findOne({
+      attributes: [['category_id', 'id'], 'name', 'createdAt', 'updatedAt'],
       where: {
-        id: id,
+        category_id: id,
       },
     });
     if (!result) {
@@ -62,7 +63,7 @@ export class CategoryService {
     id: number,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<CreateCategoryDto> {
-    const category = await Category.findOne({ where: { id: id } });
+    const category = await Category.findOne({ where: { category_id: id } });
     if (!category) {
       throw new NotFoundException('Could not find category.');
     }
@@ -75,7 +76,7 @@ export class CategoryService {
   }
 
   async remove(id: number): Promise<CreateCategoryDto> {
-    const category = await Category.findOne({ where: { id: id } });
+    const category = await Category.findOne({ where: { category_id: id } });
     if (!category) {
       throw new NotFoundException('Could not find category.');
     }
