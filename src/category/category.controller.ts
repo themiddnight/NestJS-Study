@@ -78,7 +78,10 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a category' })
+  @ApiOperation({
+    summary:
+      'Delete a category. If the category has products, the products will be deleted too.',
+  })
   @ApiResponse({ status: 200, description: 'Delete a category' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiParam({ name: 'id', required: true })

@@ -47,14 +47,13 @@ export class ProductsController {
   @ApiQuery({ name: 'limit', required: false })
   findAll(
     @Query('name') name?: string,
-    @Query('cat_id') cat_id?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     return this.productsService.findAll(name, +page, +limit);
   }
 
-  @Get('category/:cat_id')
+  @Get('category/:category_id')
   @ApiOperation({ summary: 'List of products by category' })
   @ApiResponse({
     status: 200,
@@ -62,15 +61,15 @@ export class ProductsController {
     type: ResponseProductsDto,
   })
   @ApiResponse({ status: 404, description: 'Category not found' })
-  @ApiParam({ name: 'cat_id', required: true })
+  @ApiParam({ name: 'category_id', required: true })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
   findProductsByCategory(
-    @Param('cat_id', ParseIntPipe) cat_id: number,
+    @Param('category_id', ParseIntPipe) category_id: number,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.productsService.findByCategory(cat_id, +page, +limit);
+    return this.productsService.findByCategory(category_id, +page, +limit);
   }
 
   @Get(':id')
