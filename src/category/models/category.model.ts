@@ -1,8 +1,10 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
 import { Product } from '../../products/models/product.model';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Table
 export class Category extends Model<Category> {
+  @ApiProperty()
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -10,6 +12,7 @@ export class Category extends Model<Category> {
   })
   id: number;
 
+  @ApiProperty()
   @Column({
     type: DataType.STRING,
     allowNull: false,

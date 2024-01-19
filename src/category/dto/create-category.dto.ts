@@ -7,3 +7,22 @@ export class CreateCategoryDto {
   @ApiProperty()
   name: string;
 }
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+export class ResponseCategoriesDto {
+  message: string;
+  data: Category[];
+}
+
+export class ResponseCategoryDto {
+  message: string;
+  data: Category;
+}
+
+export class DeleteCategoryDto {
+  message: string;
+}

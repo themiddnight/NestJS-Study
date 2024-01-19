@@ -1,6 +1,24 @@
 import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Category } from '../../category/models/category.model';
+// import { Category } from '../../category/models/category.model';
+import { Product } from '../models/product.model';
+
+// class Product {
+//   @ApiProperty()
+//   id: number;
+
+//   @ApiProperty()
+//   name: string;
+
+//   @ApiProperty()
+//   price: number;
+
+//   @ApiProperty()
+//   cat_id: number;
+
+//   @ApiProperty()
+//   category: Category;
+// }
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -22,23 +40,20 @@ export class CreateProductDto {
   cat_id: number;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  cat_id: number;
-  category: Category;
-}
-
 /**
  * Include message, current_page, total_pages, next, previous, data
  */
 export class ResponseProductsDto {
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   current_page: number;
+
+  @ApiProperty()
   total_pages: number;
-  next: string;
-  previous: string;
+
+  @ApiProperty({ type: Product, isArray: true })
   data: Product[];
 }
 
@@ -46,10 +61,14 @@ export class ResponseProductsDto {
  * Include message, data
  */
 export class ResponseProductDto {
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   data: Product;
 }
 
 export class DeleteProductDto {
+  @ApiProperty()
   message: string;
 }

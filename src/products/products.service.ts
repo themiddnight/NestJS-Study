@@ -38,11 +38,8 @@ export class ProductsService {
     const productCount = await Product.count({
       where: { name: { [Op.like]: `%${nameParam}%` } },
     });
-    const totalPages = Math.ceil(productCount / limitParam);
-    const previousPage = pageParam - 1 < 1 ? 1 : pageParam - 1;
-    const nextPage = pageParam + 1 > totalPages ? totalPages : pageParam + 1;
     const result = await Product.findAll({
-      attributes: ['id', 'name', 'price', 'cat_id'],
+      attributes: ['id', 'name', 'price'],
       where: { name: { [Op.like]: `%${nameParam}%` } },
       offset: (pageParam - 1) * limitParam,
       limit: limitParam,
@@ -58,14 +55,44 @@ export class ProductsService {
       message: 'Success',
       current_page: pageParam,
       total_pages: Math.ceil(productCount / limitParam),
-      previous: `${this.base_url}/${this.api_path}/products?name=${nameParam}&page=${previousPage}&limit=${limitParam}`,
-      next: `${this.base_url}/${this.api_path}/products?name=${nameParam}&page=${nextPage}&limit=${limitParam}`,
+      data: result,
+    };
+  }
+
+  async findByCategory(
+    cat_id: number,
+    page: number,
+    limit: number,
+  ): Promise<ResponseProductsDto> {
+    const pageParam = page || 1;
+    const limitParam = limit || 10;
+    const productCount = await Product.count({
+      where: { cat_id: cat_id },
+    });
+    const result = await Product.findAll({
+      attributes: ['id', 'name', 'price'],
+      where: { cat_id: cat_id },
+      offset: (pageParam - 1) * limitParam,
+      limit: limitParam,
+      include: { model: Category, attributes: ['id', 'name'] },
+    });
+    if (result.length === 0) {
+      throw new NotFoundException({
+        message: 'Could not find products.',
+        data: [],
+      });
+    }
+    return {
+      message: 'Success',
+      current_page: pageParam,
+      total_pages: Math.ceil(productCount / limitParam),
       data: result,
     };
   }
 
   async findOne(id: number): Promise<ResponseProductDto> {
     const result = await Product.findOne({
+      attributes: ['id', 'name', 'price', 'createdAt', 'updatedAt'],
       where: { id: id },
       include: { model: Category, attributes: ['id', 'name'] },
     });

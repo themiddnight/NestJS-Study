@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Table,
   Column,
@@ -10,6 +11,7 @@ import { Category } from 'src/category/models/category.model';
 
 @Table
 export class Product extends Model<Product> {
+  @ApiProperty()
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -17,18 +19,21 @@ export class Product extends Model<Product> {
   })
   id: number;
 
+  @ApiProperty()
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   name: string;
 
+  @ApiProperty()
   @Column({
     type: DataType.DECIMAL,
     allowNull: false,
   })
   price: number;
 
+  @ApiProperty()
   @ForeignKey(() => Category)
   @Column({
     type: DataType.INTEGER,
@@ -36,6 +41,7 @@ export class Product extends Model<Product> {
   })
   cat_id: number;
 
+  @ApiProperty()
   @BelongsTo(() => Category, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

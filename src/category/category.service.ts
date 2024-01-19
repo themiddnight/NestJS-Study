@@ -3,62 +3,49 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Op } from 'sequelize';
 
-import { CreateCategoryDto } from './dto/create-category.dto';
+import {
+  CreateCategoryDto,
+  ResponseCategoriesDto,
+  ResponseCategoryDto,
+} from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './models/category.model';
-import { Product } from '../products/models/product.model';
 
 @Injectable()
 export class CategoryService {
-  async findAll(): Promise<CreateCategoryDto[]> {
-    return await Category.findAll();
-  }
-
-  async findName(name: string): Promise<CreateCategoryDto[]> {
+  async findAll(): Promise<ResponseCategoriesDto> {
     const result = await Category.findAll({
-      where: { name: { [Op.like]: `%${name}%` } },
+      attributes: ['id', 'name'],
     });
-    if (!result) {
-      throw new NotFoundException('Could not find category.');
+    if (result.length === 0) {
+      throw new NotFoundException({
+        message: 'Could not find categories.',
+        data: [],
+      });
     }
-    return result;
+    return {
+      message: 'Success',
+      data: result,
+    };
   }
 
-  async findOne(id: number): Promise<CreateCategoryDto> {
+  async findOne(id: number): Promise<ResponseCategoryDto> {
     const result = await Category.findOne({
       where: {
         id: id,
       },
     });
     if (!result) {
-      throw new NotFoundException('Could not find category.');
+      throw new NotFoundException({
+        message: `Could not find category with id ${id}.`,
+        data: {},
+      });
     }
-    return result;
-  }
-
-  async findProducts(id: number) {
-    const result = await Category.findOne({
-      include: [Product],
-      where: {
-        id: id,
-      },
-    });
-    if (!result) {
-      throw new NotFoundException('Could not find category.');
-    }
-    return result.products;
-  }
-
-  async bulkCreate(
-    createCategoryDto: CreateCategoryDto[],
-  ): Promise<Array<CreateCategoryDto>> {
-    try {
-      return await Category.bulkCreate(createCategoryDto);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return {
+      message: 'Success',
+      data: result,
+    };
   }
 
   async create(

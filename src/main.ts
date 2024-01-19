@@ -11,10 +11,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const options = new DocumentBuilder()
     .setTitle('NestJS API Stydy')
-    .setDescription('This is a study project for NestJS na ja.')
+    .setDescription(`This is a study project for NestJS na ja.`)
     .setVersion('1.0')
-    .addTag('Products')
     .addTag('Categories')
+    .addTag('Products')
     .build();
 
   app.setGlobalPrefix(api_path);

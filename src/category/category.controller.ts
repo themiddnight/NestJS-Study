@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import {
@@ -14,7 +13,6 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -30,11 +28,7 @@ export class CategoryController {
   @Get()
   @ApiOperation({ summary: 'List of categories' })
   @ApiResponse({ status: 200, description: 'List of categories' })
-  @ApiQuery({ name: 'name', required: false })
-  findAll(@Query('name') name?: string) {
-    if (name) {
-      return this.categoryService.findName(name);
-    }
+  findAll() {
     return this.categoryService.findAll();
   }
 
@@ -47,15 +41,6 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
-  @Get(':id/products')
-  @ApiOperation({ summary: 'List of products by category' })
-  @ApiResponse({ status: 200, description: 'List of products by category' })
-  @ApiResponse({ status: 404, description: 'Category not found' })
-  @ApiParam({ name: 'id', required: true })
-  findProducts(@Param('id', ParseIntPipe) id: string) {
-    return this.categoryService.findProducts(+id);
-  }
-
   @Post()
   @ApiOperation({ summary: 'Create a category' })
   @ApiResponse({ status: 201, description: 'Create a category' })
@@ -63,10 +48,7 @@ export class CategoryController {
   @ApiBody({ type: CreateCategoryDto })
   @ApiConsumes('application/x-www-form-urlencoded')
   @ApiConsumes('application/json')
-  create(@Body() createCategoryDto: CreateCategoryDto | CreateCategoryDto[]) {
-    if (Array.isArray(createCategoryDto)) {
-      return this.categoryService.bulkCreate(createCategoryDto);
-    }
+  create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
 
