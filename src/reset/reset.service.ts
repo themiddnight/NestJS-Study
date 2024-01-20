@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { defaultCatagories, defaultProducts } from 'data/defaultData';
+import {
+  defaultCatagories,
+  defaultProducts,
+  defailtReviews,
+} from 'data/defaultData';
 import { Category } from '../category/models/category.model';
 import { Product } from '../products/models/product.model';
+import { Review } from 'src/reviews/models/review.model';
 
 @Injectable()
 export class ResetService {
@@ -18,8 +23,13 @@ export class ResetService {
     await Product.sequelize.query(
       'UPDATE sqlite_sequence SET seq=0 WHERE NAME="Products"',
     );
+    await Review.destroy({ truncate: true, cascade: true });
+    await Review.sequelize.query(
+      'UPDATE sqlite_sequence SET seq=0 WHERE NAME="Reviews"',
+    );
     await Category.bulkCreate(defaultCatagories);
     await Product.bulkCreate(defaultProducts);
+    await Review.bulkCreate(defailtReviews);
     return { message: 'Reset successfully' };
   }
 }

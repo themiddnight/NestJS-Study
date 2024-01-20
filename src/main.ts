@@ -15,6 +15,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Categories')
     .addTag('Products')
+    .addTag('Reviews')
     .build();
 
   app.setGlobalPrefix(api_path);

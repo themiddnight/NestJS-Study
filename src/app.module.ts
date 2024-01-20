@@ -4,12 +4,14 @@ import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 
+import { ResetModule } from './reset/reset.module';
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './category/category.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 import { Product } from './products/models/product.model';
 import { Category } from './category/models/category.model';
-import { ResetModule } from './reset/reset.module';
+import { Review } from './reviews/models/review.model';
 
 @Module({
   controllers: [AppController],
@@ -20,8 +22,8 @@ import { ResetModule } from './reset/reset.module';
       storage: 'data/db.sqlite',
       autoLoadModels: true,
       synchronize: true,
-      // sync: { force: true },
-      models: [Product, Category],
+      sync: { force: true },
+      models: [Product, Category, Review],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -29,6 +31,7 @@ import { ResetModule } from './reset/reset.module';
     ProductsModule,
     CategoryModule,
     ResetModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}

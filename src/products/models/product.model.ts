@@ -4,10 +4,12 @@ import {
   Column,
   Model,
   DataType,
-  BelongsTo,
   ForeignKey,
+  BelongsTo,
+  HasMany,
 } from 'sequelize-typescript';
 import { Category } from 'src/category/models/category.model';
+import { Review } from 'src/reviews/models/review.model';
 
 @Table
 export class Product extends Model<Product> {
@@ -61,4 +63,7 @@ export class Product extends Model<Product> {
     onUpdate: 'CASCADE',
   })
   category: Category;
+
+  @HasMany(() => Review)
+  reviews: Review[];
 }
