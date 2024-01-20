@@ -8,7 +8,16 @@ export class ResetController {
 
   @Put()
   @ApiOperation({ summary: 'Reset database' })
-  @ApiBody({ type: Boolean })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        reset: {
+          type: 'boolean',
+        },
+      },
+    },
+  })
   reset(@Body('reset') reset: boolean) {
     return this.resetService.reset(reset);
   }

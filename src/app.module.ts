@@ -22,7 +22,7 @@ import { Review } from './reviews/models/review.model';
       storage: 'data/db.sqlite',
       autoLoadModels: true,
       synchronize: true,
-      sync: { force: true },
+      // sync: { force: true },
       models: [Product, Category, Review],
     }),
     ConfigModule.forRoot({

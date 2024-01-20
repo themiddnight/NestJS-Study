@@ -64,6 +64,7 @@ export class Product extends Model<Product> {
   })
   category: Category;
 
+  @ApiProperty()
   @HasMany(() => Review)
   reviews: Review[];
 }

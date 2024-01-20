@@ -7,13 +7,9 @@ import { Op } from 'sequelize';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import {
-  ResponseProductDto,
-  ResponseProductsDto,
-  ResponseDeleteProductDto,
-} from './dto/response-product.dto';
 import { Product } from './models/product.model';
 import { Category } from '../category/models/category.model';
+import { Review } from 'src/reviews/models/review.model';
 
 @Injectable()
 export class ProductsService {
@@ -22,7 +18,7 @@ export class ProductsService {
     category_id: number,
     page: number,
     limit: number,
-  ): Promise<ResponseProductsDto> {
+  ) {
     const whereCondition: any = {};
     if (name) {
       whereCondition.name = { [Op.like]: `%${name}%` };
@@ -36,14 +32,26 @@ export class ProductsService {
       where: whereCondition,
     });
     const result = await Product.findAll({
-      attributes: { exclude: ['description', 'createdAt', 'updatedAt'] },
+      attributes: {
+        exclude: ['description', 'createdAt', 'updatedAt'],
+        include: [
+          [
+            Review.sequelize.literal(
+              '(SELECT AVG(rating) FROM reviews WHERE reviews.product_id = product.product_id)',
+            ),
+            'rating',
+          ],
+        ],
+      },
       where: whereCondition,
       offset: (page - 1) * limit,
       limit: limit,
-      include: {
-        model: Category,
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-      },
+      include: [
+        {
+          model: Category,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+      ],
     });
     if (result.length === 0) {
       throw new NotFoundException({
@@ -59,13 +67,25 @@ export class ProductsService {
     };
   }
 
-  async findOne(id: number): Promise<ResponseProductDto> {
+  async findOne(id: number) {
     const result = await Product.findOne({
       where: { product_id: id },
-      include: {
-        model: Category,
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      attributes: {
+        include: [
+          [
+            Review.sequelize.literal(
+              '(SELECT AVG(rating) FROM reviews WHERE reviews.product_id = product.product_id)',
+            ),
+            'rating',
+          ],
+        ],
       },
+      include: [
+        {
+          model: Category,
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+        },
+      ],
     });
     if (!result) {
       throw new NotFoundException({
@@ -79,9 +99,7 @@ export class ProductsService {
     };
   }
 
-  async create(
-    createProductDto: CreateProductDto,
-  ): Promise<ResponseProductDto> {
+  async create(createProductDto: CreateProductDto) {
     try {
       const result = await Product.create(createProductDto);
       return {
@@ -96,10 +114,7 @@ export class ProductsService {
     }
   }
 
-  async update(
-    id: number,
-    updateProductDto: UpdateProductDto,
-  ): Promise<ResponseProductDto> {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await Product.findOne({ where: { product_id: id } });
     if (!product) {
       throw new NotFoundException({
@@ -122,7 +137,7 @@ export class ProductsService {
     }
   }
 
-  async remove(id: number): Promise<ResponseDeleteProductDto> {
+  async remove(id: number) {
     try {
       const result = await Product.destroy({ where: { product_id: id } });
       if (result === 0) {
