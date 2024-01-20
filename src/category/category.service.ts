@@ -16,7 +16,7 @@ import { Category } from './models/category.model';
 export class CategoryService {
   async findAll(): Promise<ResponseCategoriesDto> {
     const result = await Category.findAll({
-      attributes: [['category_id', 'id'], 'name'],
+      attributes: ['category_id', 'name'],
     });
     if (result.length === 0) {
       throw new NotFoundException({
@@ -32,7 +32,6 @@ export class CategoryService {
 
   async findOne(id: number): Promise<ResponseCategoryDto> {
     const result = await Category.findOne({
-      attributes: [['category_id', 'id'], 'name', 'createdAt', 'updatedAt'],
       where: {
         category_id: id,
       },

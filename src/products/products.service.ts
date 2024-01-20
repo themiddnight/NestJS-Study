@@ -10,6 +10,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import {
   ResponseProductDto,
   ResponseProductsDto,
+  ResponseDeleteProductDto,
 } from './dto/response-product.dto';
 import { Product } from './models/product.model';
 import { Category } from '../category/models/category.model';
@@ -35,11 +36,14 @@ export class ProductsService {
       where: whereCondition,
     });
     const result = await Product.findAll({
-      attributes: [['product_id', 'id'], 'name', 'price'],
+      attributes: { exclude: ['description', 'createdAt', 'updatedAt'] },
       where: whereCondition,
       offset: (page - 1) * limit,
       limit: limit,
-      include: { model: Category, attributes: [['category_id', 'id'], 'name'] },
+      include: {
+        model: Category,
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
     });
     if (result.length === 0) {
       throw new NotFoundException({
@@ -57,15 +61,11 @@ export class ProductsService {
 
   async findOne(id: number): Promise<ResponseProductDto> {
     const result = await Product.findOne({
-      attributes: [
-        ['product_id', 'id'],
-        'name',
-        'price',
-        'createdAt',
-        'updatedAt',
-      ],
       where: { product_id: id },
-      include: { model: Category, attributes: [['category_id', 'id'], 'name'] },
+      include: {
+        model: Category,
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
     });
     if (!result) {
       throw new NotFoundException({
@@ -85,7 +85,7 @@ export class ProductsService {
     try {
       const result = await Product.create(createProductDto);
       return {
-        message: `Product with id ${result.id} has been created.`,
+        message: `Product with id ${result.product_id} has been created.`,
         data: result,
       };
     } catch (error) {
@@ -122,7 +122,7 @@ export class ProductsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<ResponseDeleteProductDto> {
     try {
       const result = await Product.destroy({ where: { product_id: id } });
       if (result === 0) {

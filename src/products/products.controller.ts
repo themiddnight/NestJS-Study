@@ -35,9 +35,7 @@ export class ProductsController {
   @Get()
   @ApiOperation({
     summary:
-      'List of products. You can filter by name, category, set page and limit. Default limit = 10',
-    description:
-      'Example: /products?name=product&category_id=1&page=1&limit=10',
+      'List of products. You can filter by name, category_id, set page and limit. Default limit = 10',
   })
   @ApiResponse({
     status: 200,
@@ -85,6 +83,9 @@ export class ProductsController {
   @ApiOperation({ summary: 'Update a product' })
   @ApiResponse({ status: 200, description: 'Update a product' })
   @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiBody({ type: UpdateProductDto })
+  @ApiConsumes('application/x-www-form-urlencoded')
+  @ApiConsumes('application/json')
   @ApiParam({ name: 'id', required: true })
   update(
     @Param('id', ParseIntPipe) id: number,

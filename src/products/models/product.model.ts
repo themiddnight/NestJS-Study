@@ -28,6 +28,13 @@ export class Product extends Model<Product> {
 
   @ApiProperty()
   @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  description: string;
+
+  @ApiProperty()
+  @Column({
     type: DataType.DECIMAL,
     allowNull: false,
   })
@@ -40,6 +47,13 @@ export class Product extends Model<Product> {
     allowNull: false,
   })
   category_id: number;
+
+  @ApiProperty()
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image_url: string;
 
   @ApiProperty()
   @BelongsTo(() => Category, {

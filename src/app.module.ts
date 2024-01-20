@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 
 import { Product } from './products/models/product.model';
 import { Category } from './category/models/category.model';
+import { ResetModule } from './reset/reset.module';
 
 @Module({
   controllers: [AppController],
@@ -27,6 +28,7 @@ import { Category } from './category/models/category.model';
     }),
     ProductsModule,
     CategoryModule,
+    ResetModule,
   ],
 })
 export class AppModule {}
