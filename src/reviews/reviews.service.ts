@@ -35,6 +35,7 @@ export class ReviewsService {
       message: 'Success',
       product_id: productId,
       avg_rating: avgRating[0]['AVG(rating)'],
+      review_count: reviewCount,
       current_page: page,
       total_pages: Math.ceil(reviewCount / limit),
       data: result,

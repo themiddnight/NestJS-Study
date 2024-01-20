@@ -41,6 +41,12 @@ export class ProductsService {
             ),
             'rating',
           ],
+          [
+            Review.sequelize.literal(
+              '(SELECT COUNT(*) FROM reviews WHERE reviews.product_id = product.product_id)',
+            ),
+            'review_count',
+          ],
         ],
       },
       where: whereCondition,
@@ -77,6 +83,12 @@ export class ProductsService {
               '(SELECT AVG(rating) FROM reviews WHERE reviews.product_id = product.product_id)',
             ),
             'rating',
+          ],
+          [
+            Review.sequelize.literal(
+              '(SELECT COUNT(*) FROM reviews WHERE reviews.product_id = product.product_id)',
+            ),
+            'review_count',
           ],
         ],
       },
