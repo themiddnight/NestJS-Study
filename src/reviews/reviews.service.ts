@@ -24,6 +24,7 @@ export class ReviewsService {
       where: { product_id: productId },
       offset: (page - 1) * limit,
       limit: limit,
+      order: [['createdAt', 'DESC']],
     });
     if (result.length === 0) {
       throw new NotFoundException({
