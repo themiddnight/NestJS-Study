@@ -115,44 +115,28 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await Product.findOne({ where: { product_id: id } });
-    if (!product) {
+    const result = await Product.update(updateProductDto, {
+      where: { product_id: id },
+    });
+    if (result[0] === 0) {
       throw new NotFoundException({
         message: `Could not find product with id ${id}.`,
       });
     }
-    product.name = updateProductDto.name || product.name;
-    product.description = updateProductDto.description || product.description;
-    product.price = updateProductDto.price || product.price;
-    product.category_id = updateProductDto.category_id || product.category_id;
-    try {
-      const result = await product.save();
-      return {
-        message: `Product with id ${id} has been updated.`,
-        data: result,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        message: error.message,
-      });
-    }
+    return {
+      message: `Product with id ${id} has been updated.`,
+    };
   }
 
   async remove(id: number) {
-    try {
-      const result = await Product.destroy({ where: { product_id: id } });
-      if (result === 0) {
-        throw new NotFoundException({
-          message: `Could not find product with id ${id}.`,
-        });
-      }
-      return {
-        message: `Product with id ${id} has been deleted.`,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        message: error.message,
+    const result = await Product.destroy({ where: { product_id: id } });
+    if (!result) {
+      throw new NotFoundException({
+        message: `Could not find product with id ${id}.`,
       });
     }
+    return {
+      message: `Product with id ${id} has been deleted.`,
+    };
   }
 }

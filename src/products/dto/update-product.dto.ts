@@ -8,18 +8,18 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  description: string;
+  description?: string;
 
   @IsOptional()
   @Transform(({ value }) => parseFloat(value))
   @IsPositive()
   @ApiProperty({ required: false, default: 100 })
-  price: number;
+  price?: number;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
@@ -28,10 +28,10 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
     required: false,
     description: 'Category ID',
   })
-  category_id: number;
+  category_id?: number;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  image_url: string;
+  image_url?: string;
 }

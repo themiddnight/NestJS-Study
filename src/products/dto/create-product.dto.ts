@@ -11,7 +11,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  description: string;
+  description?: string;
 
   @IsNotEmpty()
   @Transform(({ value }) => parseFloat(value))
@@ -31,5 +31,5 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  image_url: string;
+  image_url?: string;
 }

@@ -66,44 +66,36 @@ export class ReviewsService {
         data: result,
       };
     } catch (error) {
-      throw new NotFoundException({
-        message: 'Could not create review.',
+      throw new BadRequestException({
+        message: error.message,
         data: [],
       });
     }
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto) {
-    const review = await Review.findByPk(id);
-    if (!review) {
+    const result = await Review.update(updateReviewDto, {
+      where: { review_id: id },
+    });
+    if (result[0] === 0) {
       throw new NotFoundException({
         message: `Could not find review with id ${id}.`,
       });
     }
-    review.rating = updateReviewDto.rating || review.rating;
-    review.comment = updateReviewDto.comment || review.comment;
-    const result = await review.save();
     return {
-      message: 'Success',
-      data: result,
+      message: `Review with id ${id} has been updated.`,
     };
   }
 
   async remove(id: number) {
-    try {
-      const result = await Review.destroy({ where: { review_id: id } });
-      if (!result) {
-        throw new NotFoundException({
-          message: `Could not find review with id ${id}.`,
-        });
-      }
-      return {
-        message: `Review with id ${id} has been deleted.`,
-      };
-    } catch (error) {
-      throw new BadRequestException({
-        message: error.message,
+    const result = await Review.destroy({ where: { review_id: id } });
+    if (result === 0) {
+      throw new NotFoundException({
+        message: `Could not find review with id ${id}.`,
       });
     }
+    return {
+      message: `Review with id ${id} has been deleted.`,
+    };
   }
 }

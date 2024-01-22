@@ -57,28 +57,26 @@ export class CategoryService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const category = await Category.findOne({ where: { category_id: id } });
-    if (!category) {
-      throw new NotFoundException('Could not find category.');
+    const result = await Category.update(updateCategoryDto, {
+      where: { category_id: id },
+    });
+    if (result[0] === 0) {
+      throw new NotFoundException({
+        message: `Could not find category with id ${id}.`,
+      });
     }
-    category.name = updateCategoryDto.name;
-    try {
-      await category.save();
-      return {
-        message: `Category with id ${id} has been updated.`,
-        data: category,
-      };
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return {
+      message: `Category with id ${id} has been updated.`,
+    };
   }
 
   async remove(id: number) {
-    const category = await Category.findOne({ where: { category_id: id } });
-    if (!category) {
-      throw new NotFoundException('Could not find category.');
+    const result = await Category.destroy({ where: { category_id: id } });
+    if (!result) {
+      throw new NotFoundException({
+        message: `Could not find category with id ${id}.`,
+      });
     }
-    category.destroy();
     return {
       message: `Category with id ${id} has been deleted.`,
     };
