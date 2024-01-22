@@ -12,6 +12,17 @@ import { Category } from '../category/models/category.model';
 
 @Injectable()
 export class ProductsService {
+  // select
+  //   p.product_id, p.name, p.price, p.image_url,
+  //   c.name category,
+  //   avg(r.rating) rating,
+  //   count(r.rating) review_count
+  // from "Products" p
+  // join "Categories" c
+  //   on p.category_id = c.category_id
+  // join "Reviews" r
+  //   on p.product_id = r.product_id
+  // group by p.product_id, c.name;
   /**
    * Todo: Include average rating and review count in the response.
    */
@@ -34,7 +45,7 @@ export class ProductsService {
       where: whereCondition,
     });
     const result = await Product.findAll({
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      attributes: { exclude: ['description', 'createdAt', 'updatedAt'] },
       where: whereCondition,
       offset: (page - 1) * limit,
       limit: limit,
@@ -111,6 +122,7 @@ export class ProductsService {
       });
     }
     product.name = updateProductDto.name || product.name;
+    product.description = updateProductDto.description || product.description;
     product.price = updateProductDto.price || product.price;
     product.category_id = updateProductDto.category_id || product.category_id;
     try {
