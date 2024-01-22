@@ -9,10 +9,12 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './models/product.model';
 import { Category } from '../category/models/category.model';
-import { Review } from 'src/reviews/models/review.model';
 
 @Injectable()
 export class ProductsService {
+  /**
+   * Todo: Include average rating and review count in the response.
+   */
   async findAll(
     name: string,
     category_id: number,
@@ -32,32 +34,18 @@ export class ProductsService {
       where: whereCondition,
     });
     const result = await Product.findAll({
-      attributes: {
-        exclude: ['description', 'createdAt', 'updatedAt'],
-        include: [
-          [
-            Review.sequelize.literal(
-              '(SELECT AVG(rating) FROM reviews WHERE reviews.product_id = product.product_id)',
-            ),
-            'rating',
-          ],
-          [
-            Review.sequelize.literal(
-              '(SELECT COUNT(*) FROM reviews WHERE reviews.product_id = product.product_id)',
-            ),
-            'review_count',
-          ],
-        ],
-      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
       where: whereCondition,
       offset: (page - 1) * limit,
       limit: limit,
       include: [
         {
           model: Category,
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          attributes: ['name'],
+          required: true,
         },
       ],
+      raw: true,
     });
     if (result.length === 0) {
       throw new NotFoundException({
@@ -73,31 +61,20 @@ export class ProductsService {
     };
   }
 
+  /**
+   * Todo: Include average rating and review count in the response.
+   */
   async findOne(id: number) {
     const result = await Product.findOne({
       where: { product_id: id },
-      attributes: {
-        include: [
-          [
-            Review.sequelize.literal(
-              '(SELECT AVG(rating) FROM reviews WHERE reviews.product_id = product.product_id)',
-            ),
-            'rating',
-          ],
-          [
-            Review.sequelize.literal(
-              '(SELECT COUNT(*) FROM reviews WHERE reviews.product_id = product.product_id)',
-            ),
-            'review_count',
-          ],
-        ],
-      },
       include: [
         {
           model: Category,
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          attributes: ['name'],
+          required: true,
         },
       ],
+      raw: true,
     });
     if (!result) {
       throw new NotFoundException({

@@ -6,7 +6,6 @@ import {
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './models/review.model';
-import { QueryTypes } from 'sequelize';
 
 @Injectable()
 export class ReviewsService {
@@ -16,10 +15,12 @@ export class ReviewsService {
     const reviewCount = await Review.count({
       where: { product_id: productId },
     });
-    const avgRating = await Review.sequelize.query(
-      `SELECT AVG(rating) FROM reviews WHERE reviews.product_id = ${productId}`,
-      { type: QueryTypes.SELECT },
-    );
+    const { rating } = await Review.findOne({
+      attributes: [
+        [Review.sequelize.fn('AVG', Review.sequelize.col('rating')), 'rating'],
+      ],
+      where: { product_id: productId },
+    });
     const result = await Review.findAll({
       where: { product_id: productId },
       offset: (page - 1) * limit,
@@ -35,7 +36,7 @@ export class ReviewsService {
     return {
       message: 'Success',
       product_id: productId,
-      avg_rating: avgRating[0]['AVG(rating)'],
+      avg_rating: Number(rating),
       review_count: reviewCount,
       current_page: page,
       total_pages: Math.ceil(reviewCount / limit),

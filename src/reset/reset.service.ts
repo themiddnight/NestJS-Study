@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 
 import {
@@ -15,21 +16,23 @@ export class ResetService {
     if (!reset) {
       return { message: 'Reset is not requested' };
     }
-    await Category.destroy({ truncate: true, cascade: true });
-    await Category.sequelize.query(
-      'UPDATE sqlite_sequence SET seq=0 WHERE NAME="Categories"',
-    );
-    await Product.destroy({ truncate: true, cascade: true });
-    await Product.sequelize.query(
-      'UPDATE sqlite_sequence SET seq=0 WHERE NAME="Products"',
-    );
-    await Review.destroy({ truncate: true, cascade: true });
-    await Review.sequelize.query(
-      'UPDATE sqlite_sequence SET seq=0 WHERE NAME="Reviews"',
-    );
-    await Category.bulkCreate(defaultCatagories);
-    await Product.bulkCreate(defaultProducts);
-    await Review.bulkCreate(defailtReviews);
-    return { message: 'Reset successfully' };
+    try {
+      await Review.destroy({ where: {} });
+      await Product.destroy({ where: {} });
+      await Category.destroy({ where: {} });
+      await Review.sequelize.query('ALTER SEQUENCE "Reviews_review_id_seq" RESTART WITH 1');
+      await Product.sequelize.query('ALTER SEQUENCE "Products_product_id_seq" RESTART WITH 1');
+      await Category.sequelize.query('ALTER SEQUENCE "Categories_category_id_seq" RESTART WITH 1');
+      // for sqlite
+      // await Review.sequelize.query('UPDATE sqlite_sequence SET seq=0 WHERE NAME="Reviews"');
+      // await Product.sequelize.query('UPDATE sqlite_sequence SET seq=0 WHERE NAME="Products"');
+      // await Category.sequelize.query('UPDATE sqlite_sequence SET seq=0 WHERE NAME="Categories"');
+      await Category.bulkCreate(defaultCatagories);
+      await Product.bulkCreate(defaultProducts);
+      await Review.bulkCreate(defailtReviews);
+      return { message: 'Reset successfully' };
+    } catch (error) {
+      return { message: 'Reset failed', error: error };
+    }
   }
 }
