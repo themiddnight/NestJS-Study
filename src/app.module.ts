@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -12,6 +12,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { Product } from './products/models/product.model';
 import { Category } from './category/models/category.model';
 import { Review } from './reviews/models/review.model';
+import { LoggerMiddleware } from './logger/logger.middleware';
 
 @Module({
   controllers: [AppController],
@@ -29,6 +30,7 @@ import { Review } from './reviews/models/review.model';
       database: process.env.DB_POSTGRES_DATABASE,
       autoLoadModels: true,
       synchronize: true,
+      logging: false,
       // sync: { force: true },
       models: [Product, Category, Review],
     }),
@@ -38,4 +40,8 @@ import { Review } from './reviews/models/review.model';
     ReviewsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
