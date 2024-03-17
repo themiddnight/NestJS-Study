@@ -3,9 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-const base_url = process.env.BASE_URL;
-const port = process.env.PORT;
-const api_path = process.env.API_PATH;
+const port = 3000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +16,7 @@ async function bootstrap() {
     .addTag('Reviews')
     .build();
 
-  app.setGlobalPrefix(api_path);
+  app.setGlobalPrefix('api');
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,7 +28,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(port);
-  console.log(`API started on: ${base_url}/${api_path}`);
+  console.log(`Server is running on port 3000`);
 }
 
 bootstrap();
